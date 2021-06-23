@@ -8,13 +8,13 @@ from PIL import Image
 
 class Recognition:
     def ExtractNumber(self):
-        Number = 'C:/Users/DHICC/PycharmProjects/project_pytesseract/testimg3.jpg' #번호판 사진
+        Number = 'C:/Users/DHICC/PycharmProjects/project_pytesseract/testimg3.jpg  ' #번호판 사진
 
         # 이미지 파일 읽기
         # cv2.IMREAD_COLOR : 이미지 파일을 Color로 읽음
         img = cv2.imread(Number, cv2.IMREAD_COLOR)
 
-        #이미지 파일 보기
+        #이미지 파일 보기 1
         cv2.imshow('Original', img)
         cv2.waitKey(0) # keyboard입력 대기(0: 무한대기)
         cv2.destroyAllWindows()
@@ -23,7 +23,7 @@ class Recognition:
         img2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # 색상 공간 변환(BGR2GRAY: 그레이스케일 이미지)
         cv2.imwrite('gray.jpg', img2) # 변환된 이미지 저장
 
-        #이미지 파일 보기
+        #이미지 파일 보기 2
         cv2.imshow('Original', img2)
         cv2.waitKey(0) # keyboard입력 대기(0: 무한대기)
         cv2.destroyAllWindows()
@@ -32,7 +32,7 @@ class Recognition:
         blur = cv2.GaussianBlur(img2, (3, 3), 0)
         cv2.imwrite('blur.jpg', blur)
 
-        #이미지 파일 보기
+        #이미지 파일 보기 3
         cv2.imshow('Original', blur)
         cv2.waitKey(0) # keyboard입력 대기(0: 무한대기)
         cv2.destroyAllWindows()
@@ -41,7 +41,7 @@ class Recognition:
         canny = cv2.Canny(blur, 100, 200)
         cv2.imwrite('canny.jpg', canny)
 
-        #이미지 파일 보기
+        #이미지 파일 보기 4
         cv2.imshow('Original', canny)
         cv2.waitKey(0) # keyboard입력 대기(0: 무한대기)
         cv2.destroyAllWindows()
@@ -61,8 +61,8 @@ class Recognition:
 
         for i in range(len(contours)):
             cnt = contours[i]
-            area = cv2.contourArea(cnt)
-            x, y, w, h = cv2.boundingRect(cnt)
+            area = cv2.contourArea(cnt) # cv2.contourArea: 객체의 넓이
+            x, y, w, h = cv2.boundingRect(cnt) # 도형을 감싸는 사각형 영역 추출
             rect_area = w * h  # area size
             aspect_ratio = float(w) / h  # ratio = width/height
 
@@ -102,8 +102,7 @@ class Recognition:
         cv2.imwrite('snake.jpg', img)
 
         # 번호판의 사이즈는 상수 값으로 Offset을 주어서 추출
-        number_plate = copy_img[box1[select][1] - 10:box1[select][3] + box1[select][1] + 20,
-                       box1[select][0] - 10:140 + box1[select][0]]
+        number_plate = copy_img[box1[select][1] - 10:box1[select][3] + box1[select][1] + 20, box1[select][0] - 10:140 + box1[select][0]]
 
         resize_plate = cv2.resize(number_plate, None, fx=1.8, fy=1.8, interpolation=cv2.INTER_CUBIC + cv2.INTER_LINEAR)
         plate_gray = cv2.cvtColor(resize_plate, cv2.COLOR_BGR2GRAY)
@@ -112,7 +111,7 @@ class Recognition:
         ret, th_plate = cv2.threshold(plate_gray, 150, 255, cv2.THRESH_BINARY)
         cv2.imwrite('plate_th.jpg', th_plate)
 
-        #이미지 파일 보기
+        #이미지 파일 보기 5
         cv2.imshow('Original', th_plate)
         cv2.waitKey(0) # keyboard입력 대기(0: 무한대기)
         cv2.destroyAllWindows()
@@ -125,20 +124,24 @@ class Recognition:
         er_invplate = er_plate
         cv2.imwrite('er_plate.jpg', er_invplate)
 
-        #이미지 파일 보기
+        #이미지 파일 보기 6
         cv2.imshow('Original', er_invplate)
         cv2.waitKey(0) # keyboard입력 대기(0: 무한대기)
         cv2.destroyAllWindows()
 
         #Tesseract!
-        result = pytesseract.image_to_string(Image.open('er_plate.jpg'), lang='kor')
-
-        return (result.replace(" ", "")) # replace: 문자열 치환?
+        result = pytesseract.image_to_string(Image.open('er_plate.jpg'), 'kora', '--psm 7 --oem 0')
+        arr=result.split('\n')[0:1]
+        result='\n'.join(arr)
+        return (result.replace(" ", " ")) # replace: 문자열 치환?
 
 
 recogtest = Recognition()
 result = recogtest.ExtractNumber()
 print(result)
+
+
+
 
 
 
